@@ -1,37 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Company.Core.Specifications
 {
     public class BaseSpecification<T> : ISpecification<T>
     {
-        public Expression<Func<T, bool>>? Criteria { get; private set; }
+        public BaseSpecification(Expression<Func<T, bool>> criteria)
+        {
+            Criteria = criteria;
+        }
+
+        public Expression<Func<T, bool>> Criteria { get; }
 
         public List<Expression<Func<T, object>>> Includes { get; } = new();
 
-        public Expression<Func<T, object>>? OrderBy { get; private set; }
+        public Expression<Func<T, object>> OrderBy { get; private set; }
 
-        public Expression<Func<T, object>>? OrderByDescending { get; private set; }
+        public Expression<Func<T, object>> OrderByDescending { get; private set; }
 
         public int Skip { get; private set; }
 
         public int Take { get; private set; }
 
         public bool IsPagingEnabled { get; private set; }
-
-        public BaseSpecification()
-        {
-        }
-
-        public BaseSpecification(Expression<Func<T, bool>> criteria)
-        {
-            Criteria = criteria;
-        }
 
         protected void AddInclude(Expression<Func<T, object>> includeExpression)
         {
@@ -52,9 +42,7 @@ namespace Company.Core.Specifications
         {
             Skip = skip;
             Take = take;
-            IsPagingEnabled = true;
+            IsPagingEnabled = true; // 🔥 MUST exist
         }
-
-       
     }
 }

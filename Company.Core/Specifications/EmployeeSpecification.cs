@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Company.Core.Entities;
+﻿using Company.Core.Entities;
 
 namespace Company.Core.Specifications
 {
@@ -12,7 +7,7 @@ namespace Company.Core.Specifications
         public EmployeeSpecification(EmployeeSpecParams specParams)
             : base(x =>
                 (string.IsNullOrEmpty(specParams.Search) ||
-                 x.Name.ToLower().Contains(specParams.Search)) &&
+                 x.Name.ToLower().Contains(specParams.Search.ToLower())) &&
 
                 (!specParams.DepartmentId.HasValue ||
                  x.DepartmentId == specParams.DepartmentId))
@@ -35,6 +30,10 @@ namespace Company.Core.Specifications
                         AddOrderBy(x => x.Name);
                         break;
                 }
+            }
+            else
+            {
+                AddOrderBy(x => x.Name);
             }
 
             ApplyPaging(

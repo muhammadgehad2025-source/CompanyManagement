@@ -3,5 +3,7 @@
     public interface IServiceManager
     {
         IEmployeeService EmployeeService { get; }
+
+        IAuthService AuthService { get; }
     }
 }

@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Company.Infrastructure.Services
+namespace Company.Service
 {
     public class TokenService : ITokenService
     {
@@ -21,11 +21,12 @@ namespace Company.Infrastructure.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.NameIdentifier, userId)
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Name, email)
             };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["JWT:Key"])
+                Encoding.UTF8.GetBytes(_config["JWT:Key"]!)
             );
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -34,7 +35,7 @@ namespace Company.Infrastructure.Services
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(1),
+                expires: DateTime.UtcNow.AddHours(1), // 🔥 better than days
                 signingCredentials: creds
             );
 

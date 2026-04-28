@@ -8,17 +8,17 @@ namespace Company.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IServiceManager _serviceManager;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IServiceManager serviceManager)
         {
-            _authService = authService;
+            _serviceManager = serviceManager;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<string>> Register(RegisterDto dto)
         {
-            var result = await _authService.RegisterAsync(dto);
+            var result = await _serviceManager.AuthService.RegisterAsync(dto);
 
             return Ok(result);
         }
@@ -26,7 +26,7 @@ namespace Company.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginDto dto)
         {
-            var result = await _authService.LoginAsync(dto);
+            var result = await _serviceManager.AuthService.LoginAsync(dto);
 
             return Ok(result);
         }

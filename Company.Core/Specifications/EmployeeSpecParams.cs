@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Company.Core.Specifications
+﻿namespace Company.Core.Specifications
 {
     public class EmployeeSpecParams
     {
@@ -16,14 +10,26 @@ namespace Company.Core.Specifications
 
         private const int MaxPageSize = 50;
 
-        public int PageIndex { get; set; } = 1;
+        private int pageIndex = 1;
+        public int PageIndex
+        {
+            get => pageIndex;
+            set => pageIndex = value < 1 ? 1 : value;
+        }
 
         private int pageSize = 5;
-
         public int PageSize
         {
             get => pageSize;
-            set => pageSize = value > MaxPageSize ? MaxPageSize : value;
+            set
+            {
+                if (value < 1)
+                    pageSize = 5;
+                else if (value > MaxPageSize)
+                    pageSize = MaxPageSize;
+                else
+                    pageSize = value;
+            }
         }
     }
 }

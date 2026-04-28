@@ -10,9 +10,4 @@
     <ProjectReference Include="..\Company.Core\Company.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ServiceManager\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

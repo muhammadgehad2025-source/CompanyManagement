@@ -3,7 +3,7 @@ using Company.Core.Interfaces.Services;
 using Company.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
-namespace Company.Infrastructure.Services
+namespace Company.Service
 {
     public class AuthService : IAuthService
     {
@@ -38,7 +38,8 @@ namespace Company.Infrastructure.Services
                 return errors;
             }
 
-            return "User registered successfully";
+            // 🔥 IMPORTANT: Return token immediately after register
+            return _tokenService.CreateToken(user.Email, user.Id);
         }
 
         public async Task<string> LoginAsync(LoginDto dto)

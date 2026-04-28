@@ -9,22 +9,21 @@ namespace Company.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add Application Services
+            // ---------------- SERVICES ----------------
             builder.Services.AddApplicationServices(builder.Configuration);
 
-            // Add Controllers
             builder.Services.AddControllers();
 
-            // Swagger Services
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Global Exception Middleware
+            // ---------------- MIDDLEWARE ----------------
+
+            //  MUST BE FIRST
             app.UseMiddleware<ExceptionMiddleware>();
 
-            // Configure HTTP pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -33,8 +32,8 @@ namespace Company.API
 
             app.UseHttpsRedirection();
 
+            //  AUTH PIPELINE (ORDER MATTERS)
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.MapControllers();

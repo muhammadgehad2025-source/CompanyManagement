@@ -1,13 +1,10 @@
-﻿using AutoMapper;
-using Company.API.Errors;
+﻿using Company.API.Errors;
 using Company.Core.DTOs;
-using Company.Core.Entities;
 using Company.Core.Helpers;
-using Company.Core.Interfaces;
 using Company.Core.Interfaces.Services;
 using Company.Core.Specifications;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Company.API.Controllers
 {
@@ -17,14 +14,17 @@ namespace Company.API.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IServiceManager _serviceManager;
+
         public EmployeesController(IServiceManager serviceManager)
         {
             _serviceManager = serviceManager;
         }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
         {
             var employee = await _serviceManager.EmployeeService.GetEmployeeByIdAsync(id);
+
             if (employee == null)
                 return NotFound(new ApiResponse(404));
 
@@ -33,16 +33,28 @@ namespace Company.API.Controllers
 
         [HttpGet]
         public async Task<ActionResult<Pagination<EmployeeDto>>> GetEmployees(
-    [FromQuery] EmployeeSpecParams specParams)
+            [FromQuery] EmployeeSpecParams specParams)
         {
+            // 🔥 Safety guards
+            if (specParams.PageIndex < 1) specParams.PageIndex = 1;
+            if (specParams.PageSize < 1) specParams.PageSize = 5;
+
             var result = await _serviceManager.EmployeeService.GetEmployeesAsync(specParams);
+
             return Ok(result);
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateEmployee(CreateEmployeeDto dto)
         {
-            return Ok();
+            return Ok(); // we'll implement later
+        }
+
+        [AllowAnonymous]
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok("Employees controller is working");
         }
     }
 }
