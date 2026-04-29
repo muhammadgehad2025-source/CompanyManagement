@@ -7,5 +7,6 @@ namespace Company.Core.Interfaces.Services
         Task<string> RegisterAsync(RegisterDto dto);
 
         Task<string> LoginAsync(LoginDto dto);
+        Task<string> AddUserToRoleAsync(string email, string role);
     }
 }

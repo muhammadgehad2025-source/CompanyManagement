@@ -10,15 +10,18 @@ namespace Company.Service
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthService(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _roleManager = roleManager;
         }
 
         public async Task<string> RegisterAsync(RegisterDto dto)
@@ -38,8 +41,7 @@ namespace Company.Service
                 return errors;
             }
 
-            // 🔥 IMPORTANT: Return token immediately after register
-            return _tokenService.CreateToken(user.Email, user.Id);
+            return await _tokenService.CreateToken(dto.Email, user.Id);
         }
 
         public async Task<string> LoginAsync(LoginDto dto)
@@ -54,7 +56,26 @@ namespace Company.Service
             if (!result.Succeeded)
                 return "Invalid password";
 
-            return _tokenService.CreateToken(user.Email, user.Id);
+            return await _tokenService.CreateToken(dto.Email, user.Id);
+        }
+
+        public async Task<string> AddUserToRoleAsync(string email, string role)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return "User not found";
+
+            // FIX: use RoleManager instead
+            if (!await _roleManager.RoleExistsAsync(role))
+                return "Role does not exist";
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+
+            if (!result.Succeeded)
+                return "Failed to assign role";
+
+            return $"User added to {role}";
         }
     }
 }

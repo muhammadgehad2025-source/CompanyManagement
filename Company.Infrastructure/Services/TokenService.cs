@@ -1,29 +1,47 @@
 ﻿using Company.Core.Interfaces.Services;
+using Company.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Company.Service
+namespace Company.Infrastructure.Services
 {
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _config;
+        private readonly UserManager<AppUser> _userManager;
 
-        public TokenService(IConfiguration config)
+        public TokenService(
+            IConfiguration config,
+            UserManager<AppUser> userManager)
         {
             _config = config;
+            _userManager = userManager;
         }
 
-        public string CreateToken(string email, string userId)
+        public async Task<string> CreateToken(string email, string userId)
         {
+            // 🔥 GET USER
+            var user = await _userManager.FindByEmailAsync(email);
+
+            // 🔥 GET ROLES
+            var roles = await _userManager.GetRolesAsync(user!);
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Name, email)
             };
+
+            // 🔥 ADD ROLES
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["JWT:Key"]!)
@@ -35,7 +53,7 @@ namespace Company.Service
                 issuer: _config["JWT:Issuer"],
                 audience: _config["JWT:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1), // 🔥 better than days
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
             );
 

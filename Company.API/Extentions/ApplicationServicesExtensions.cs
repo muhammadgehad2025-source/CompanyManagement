@@ -59,7 +59,6 @@ namespace Company.API.Extensions
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
-            // ================= JWT (🔥 FIXED PROPERLY) =================
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -83,7 +82,6 @@ namespace Company.API.Extensions
                     )
                 };
 
-                // 🔥 DEBUG EVENTS (VERY IMPORTANT)
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Company.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class EmployeesController : ControllerBase
@@ -20,6 +19,18 @@ namespace Company.API.Controllers
             _serviceManager = serviceManager;
         }
 
+        // Admin only
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<ActionResult<Pagination<EmployeeDto>>> GetEmployees(
+            [FromQuery] EmployeeSpecParams specParams)
+        {
+            var result = await _serviceManager.EmployeeService.GetEmployeesAsync(specParams);
+            return Ok(result);
+        }
+
+        // Admin only
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<EmployeeDto>> GetEmployee(int id)
         {
@@ -31,25 +42,15 @@ namespace Company.API.Controllers
             return Ok(employee);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<Pagination<EmployeeDto>>> GetEmployees(
-            [FromQuery] EmployeeSpecParams specParams)
-        {
-            // 🔥 Safety guards
-            if (specParams.PageIndex < 1) specParams.PageIndex = 1;
-            if (specParams.PageSize < 1) specParams.PageSize = 5;
-
-            var result = await _serviceManager.EmployeeService.GetEmployeesAsync(specParams);
-
-            return Ok(result);
-        }
-
+        // Admin only
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult> CreateEmployee(CreateEmployeeDto dto)
+        public IActionResult CreateEmployee(CreateEmployeeDto dto)
         {
-            return Ok(); // we'll implement later
+            return Ok("Employee created (placeholder)");
         }
 
+        // Public test endpoint
         [AllowAnonymous]
         [HttpGet("ping")]
         public IActionResult Ping()
