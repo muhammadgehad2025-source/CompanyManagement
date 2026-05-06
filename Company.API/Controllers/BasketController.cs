@@ -1,6 +1,9 @@
-﻿using Company.Core.Entities.Basket;
+﻿using Company.Core.DTOs.Basket;
+using Company.Core.Entities.Basket;
 using Company.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Company.API.Controllers
 {
@@ -15,26 +18,50 @@ namespace Company.API.Controllers
             _basketRepo = basketRepo;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerBasket>> GetBasket(string id)
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<CustomerBasket>> GetBasket()
         {
-            var basket = await _basketRepo.GetBasketAsync(id);
+            var email = User.FindFirstValue(ClaimTypes.Email);
 
-            return Ok(basket ?? new CustomerBasket { Id = id });
+            var basket = await _basketRepo.GetBasketAsync(email);
+
+            return Ok(basket ?? new CustomerBasket { Id = email });
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasket basket)
+        public async Task<ActionResult<CustomerBasket>> UpdateBasket(CustomerBasketDto basketDto)
         {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            var basket = new CustomerBasket
+            {
+                Id = email,
+                Items = basketDto.Items.Select(i => new BasketItem
+                {
+                    ProductId = i.ProductId,
+                    ProductName = i.ProductName,
+                    Price = i.Price,
+                    Quantity = i.Quantity,
+                    PictureUrl = i.PictureUrl,
+                    Brand = i.Brand,
+                    Type = i.Type
+                }).ToList()
+            };
+
             var updated = await _basketRepo.UpdateBasketAsync(basket);
 
             return Ok(updated);
         }
 
-        [HttpDelete("{id}")]
-        public async Task DeleteBasket(string id)
+        [Authorize]
+        [HttpDelete]
+        public async Task DeleteBasket()
         {
-            await _basketRepo.DeleteBasketAsync(id);
+            var email = User.FindFirstValue(ClaimTypes.Email);
+
+            await _basketRepo.DeleteBasketAsync(email);
         }
     }
 }

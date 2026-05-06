@@ -7,5 +7,6 @@ namespace Company.Core.Interfaces
         IGenericRepository<T> Repository<T>() where T : class;
 
         Task<int> CompleteAsync();
+
     }
 }

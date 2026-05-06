@@ -43,6 +43,7 @@ namespace Company.API.Extensions
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             // ---------------- FACTORIES ----------------
             services.AddScoped<Func<IEmployeeService>>(sp =>

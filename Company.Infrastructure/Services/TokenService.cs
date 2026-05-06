@@ -24,10 +24,8 @@ namespace Company.Infrastructure.Services
 
         public async Task<string> CreateToken(string email, string userId)
         {
-            // 🔥 GET USER
             var user = await _userManager.FindByEmailAsync(email);
 
-            // 🔥 GET ROLES
             var roles = await _userManager.GetRolesAsync(user!);
 
             var claims = new List<Claim>
@@ -37,7 +35,6 @@ namespace Company.Infrastructure.Services
                 new Claim(ClaimTypes.Name, email)
             };
 
-            // 🔥 ADD ROLES
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
